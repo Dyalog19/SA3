@@ -2,27 +2,28 @@
  :If 0∊⍴args
      thisFn←⊃⎕XSI
      html←'HTML'(1↓∊(⎕UCS 13),¨2↓¨¯1↓(1+HTML)↓⎕NR thisFn)
-     wsu←'Event'('WebSocketUpgrade'thisFn)
-     wsr←'Event'('WebSocketReceive'thisFn)
-     wse←'Event'('WebSocketError'thisFn)
-     wsc←'Event'('WebSocketClose'thisFn)
-     iu←'InterceptedURLs'(2 2⍴'*echo*' 0 '*dyalog_root*' 1)
+     wsu←'Event'('onWebSocketUpgrade'thisFn)
+     wsr←'Event'('onWebSocketReceive'thisFn)
+     wse←'Event'('onWebSocketError'thisFn)
+     wsc←'Event'('onWebSocketClose'thisFn)
+     iu←'InterceptedURLs'(1 2⍴'*dyalog_root*' 1) ⍝ HTMLRenderer will eventually allow ws[s]://dyalog_root/ through
      'hr'⎕WC'HTMLRenderer'html wsu wsr wse wsc iu
  :Else
      :Select ⎕←2⊃args ⍝ event
      :Case 'WebSocketUpgrade'
          ⎕←((' '∘≠⊆⊢)'obj ev wsid url'),⍪args
          (obj ev wsid url)←args
+         ⎕FX'WebSocketSend msg'('⎕NQ ',(⍕obj),'''WebSocketSend'' ''',wsid,''' msg')
      :Case 'WebSocketReceive'
          ⎕←((' '∘≠⊆⊢)'obj ev wsid data fin type'),⍪args
          (obj ev wsid data fin type)←args
          :If type=2 ⍝ UInt16
              ⎕←'Translated to character: ',⎕UCS 163 ⎕DR data
          :Else
-             0 ⎕NQ obj'WebSocketSend'wsid(⌽data)
+             ⎕NQ obj'WebSocketSend'wsid(⌽data)
          :EndIf
          :If 'close me'≡data
-             0 ⎕NQ obj'WebSocketClose'wsid
+             ⎕NQ obj'WebSocketClose'wsid
          :EndIf
      :Case 'WebSocketClose'
          ⎕←((' '∘≠⊆⊢)'obj ev wsid'),⍪args
@@ -96,7 +97,7 @@ HTML:
 ⍝  function onMessage(evt)
 ⍝  {
 ⍝    data = evt.data;
-⍝    writeToScreen('<span style="color: blue;">RESPONSE: </span>' + evt.data);
+⍝    writeToScreen('<span style="color: blue;">RECEIVED: </span>' + evt.data);
 ⍝  }
 ⍝
 ⍝  function onError(evt)

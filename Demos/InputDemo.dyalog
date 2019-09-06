@@ -1,6 +1,6 @@
 ﻿ InputDemo;pg;frm;fs;ig;btn;fname;dob;nextBd;fav;msg
  pg←⎕NEW #.Page  ⍝ create a new page
- pg.Size←600 500
+ pg.Size←475 500
  frm←pg.Add _.Form ⍝ add a form
  fs←frm.Add _.Fieldset'Tell Us About You'
  ig←fs.Add _.InputGrid
